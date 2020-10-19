@@ -8,10 +8,12 @@ Make sure your game is closed or you will have to reboot it to made the addOn wo
 
 Go to your WoW FOLDER:
 
-1. go to \_retail\_\Interface\AddOns
+1. Download the latest release
 
-2. extract VoSList-main.zip
+2. go to \_retail\_\Interface\AddOns
 
-3. Enjoy ! :)
+3. extract VoSList.zip
+
+4. Enjoy ! :)
 
 
