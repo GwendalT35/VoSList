@@ -8,7 +8,7 @@ Make sure your game is closed or you will have to reboot it to made the addOn wo
 
 Go to your WoW FOLDER:
 
-1. Download the latest release
+1. [Download the latest release](https://github.com/Zoro35/VoSList/releases/latest)
 
 2. go to \_retail\_\Interface\AddOns
 
