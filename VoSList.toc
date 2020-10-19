@@ -1,6 +1,6 @@
 ## Interface: 90001
 ## Title: VoS List
 ## Notes: Liste des composants pour la fiole des sables
-## DefaultState: disabled
-VoSList.xml
+## DefaultState: enabled
+
 VoSList.lua
