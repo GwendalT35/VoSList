@@ -2,7 +2,7 @@
 ## Description
 Addon World of Warcraft to track the list of component you got for the Vial Of Sand
 
-# Installation guide
+## Installation guide
 
 Make sure you game is closed or you will have to reboot it to made the addOn work
 
