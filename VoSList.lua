@@ -1,164 +1,93 @@
-local frame = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate")
-local text = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate")
-frame:SetPoint("LEFT", 0, 0)
-frame:SetSize(200, 230)
+print("|cFFFFAA00[VoSList]:|r Addon chargé")
+
+-- Frame principale
+local frame = CreateFrame("Frame", "VoSListFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
+frame:SetSize(250, 100)
+frame:SetPoint("CENTER", 0, 0)
 frame:SetBackdrop({
-    bgFile = "Interface\\ACHIEVEMENTFRAME\\UI-ACHIEVEMENT-PARCHMENT",
-    edgeFile = "",
+    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
     edgeSize = 16,
-    insets = { left = 4, right = 4, top = 4, bottom = 4 },
+    insets = { left = 5, right = 5, top = 5, bottom = 5 },
 })
-frame:SetBackdropColor(0, 0, 0, .5)
-t = frame:CreateFontString(frame, "OVERLAY", "GameFontNormal")
-t:SetFont("Fonts\\2002.TTF", 16)
-t:SetPoint("TOP", 0, -15)
+frame:SetBackdropColor(0, 0, 0, 0.7)
+frame:SetMovable(true)
+frame:EnableMouse(true)
+frame:RegisterForDrag("LeftButton")
+frame:SetScript("OnDragStart", frame.StartMoving)
+frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
+-- Table des items { nom, id, requis }
+local items = {
+    { "Fiole des sables",   65891, 1 },
+    { "Fiole cristalline",  65892, 1 },
+    { "Sable du temps",     65893, 8 },
+    { "Vrai or",            58480, 12 },
+    { "Flacon des vents",   58087, 8 },
+    { "Voile d'Azshara",    52985, 64 },
+    { "Flacon des Titans",  58088, 8 },
+    { "Cendrelle",          52983, 64 },
+    { "Vie volatille",      52329, 128 },
+    { "Fouettine",          52988, 128 },
+    { "Fiole de cristal",   3371, 2 },
+    { "Huile de pierre",    56850, 8 },
+}
 
+-- Stocke les FontStrings pour les lignes
+local lineFontStrings = {}
 
-frame:RegisterEvent('PLAYER_LOGIN')
+-- Fonction pour créer la liste avec deux colonnes
+local function afficher_List()
+    -- Supprime les anciens FontStrings si déjà créés
+    for _, fs in ipairs(lineFontStrings) do
+        fs.name:Hide()
+        fs.count:Hide()
+    end
+    lineFontStrings = {}
+
+    local yOffset = -10
+    local nameX = 10
+    local countX = 150  -- position de la colonne des compteurs
+
+    for _, v in ipairs(items) do
+        local name, id, required = unpack(v)
+        local count = GetItemCount(id)
+        local color = (count >= required) and "|cFF00FF00" or "|cFFFF0000"
+
+        -- FontString pour le nom
+        local nameFS = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        nameFS:SetPoint("TOPLEFT", nameX, yOffset)
+        nameFS:SetText(color .. name .. "|r")
+        nameFS:SetJustifyH("LEFT")
+
+        -- FontString pour le compteur
+        local countFS = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        countFS:SetPoint("TOPLEFT", countX, yOffset)
+        countFS:SetText(color .. count .. "/" .. required .. "|r")
+        countFS:SetJustifyH("LEFT")
+
+        table.insert(lineFontStrings, { name = nameFS, count = countFS })
+
+        yOffset = yOffset - 20  -- espace entre les lignes
+    end
+
+    -- Ajuste la hauteur de la frame
+    local totalHeight = 20 + (#items * 20)
+    frame:SetHeight(totalHeight)
+end
+
+-- Event PLAYER_LOGIN
+frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(self, event, ...)
-
-    if (event == 'PLAYER_LOGIN') then
-        VoS = GetItemCount(65891)
-        Vc = GetItemCount(65892)
-        SoT = GetItemCount(65893)
-        gold = GetItemCount(58480)
-        fWind = GetItemCount(58087)
-        Azshara = GetItemCount(52985)
-        fTitan = GetItemCount(58088)
-        cendrelle = GetItemCount(52983)
-        vieVola = GetItemCount(52329)
-        fouett = GetItemCount(52988)
-        f2c = GetItemCount(3371)
-        huile = GetItemCount(56850)
-
-        afficher_List(VoS, Vc, SoT, gold , fWind , Azshara , fTitan, cendrelle , vieVola, fouett, f2c, huile)
-
-    end
+    afficher_List()
 end)
 
-local TimeSinceLastUpdate = 0
-local ONUPDATE_INTERVAL = 0.5
-frame:SetScript("OnUpdate", function(self, elapsed)
-	TimeSinceLastUpdate = TimeSinceLastUpdate + elapsed
-	if TimeSinceLastUpdate >= ONUPDATE_INTERVAL then
-		TimeSinceLastUpdate = 0
-		
-		VoS = GetItemCount(65891)
-        Vc = GetItemCount(65892)
-        SoT = GetItemCount(65893)
-        gold = GetItemCount(58480)
-        fWind = GetItemCount(58087)
-        Azshara = GetItemCount(52985)
-        fTitan = GetItemCount(58088)
-        cendrelle = GetItemCount(52983)
-        vieVola = GetItemCount(52329)
-        fouett = GetItemCount(52988)
-        f2c = GetItemCount(3371)
-        huile = GetItemCount(56850)
-
-        afficher_List(VoS, Vc, SoT, gold , fWind , Azshara , fTitan, cendrelle , vieVola, fouett, f2c, huile)
-	end
+-- Mise à jour régulière
+local TimeSinceLastUpdate, ONUPDATE_INTERVAL = 0, 0.5
+frame:SetScript("OnUpdate", function(_, elapsed)
+    TimeSinceLastUpdate = TimeSinceLastUpdate + elapsed
+    if TimeSinceLastUpdate >= ONUPDATE_INTERVAL then
+        TimeSinceLastUpdate = 0
+        afficher_List()
+    end
 end)
-
-function afficher_List(VoS, Vc, SoT, gold , fWind , Azshara , fTitan, cendrelle , vieVola, fouett, f2c, huile)
-
-    if (VoS >= 1) then
-        str1 = "Fiole des sables: " ..VoS.. "/1\124r"
-        str1 = color_Green(str1)
-    else
-        str1 =  "Fiole des sables: " ..VoS.. "/1\124r"
-        str1 = color_Red(str1)
-    end
-    if (Vc >= 1) then
-        str2 = "|cFF00FF00" .."Fiole cristalline: " ..Vc.. "/1\124r"
-        str2 = color_Green(str2)
-    else
-        str2 = "Fiole cristalline: " ..Vc.. "/1\124r"
-        str2 = color_Red(str2)
-    end
-    if (SoT >= 8) then
-        str3 = "Sable du temps: " ..SoT.. "/8\124r"
-        str3 = color_Green(str3)
-    else
-        str3 = "Sable du temps: " ..SoT.. "/8\124r"
-        str3 = color_Red(str3)
-    end
-    if (gold >= 12) then
-        str4 = "Vrai or: " ..gold.. "/12\124r"
-        str4 = color_Green(str4)
-    else
-        str4 = "Vrai or: " ..gold.. "/12\124r"
-        str4 = color_Red(str4)
-    end
-    if ( fWind >= 8) then
-        str5 = "Flacon des vents: " ..fWind.. "/8\124r"
-        str5 = color_Green(str5)
-    else
-        str5 = "Flacon des vents: " ..fWind.. "/8\124r"
-        str5 = color_Red(str5)
-    end
-    if (Azshara >= 64) then
-        str6 = "Voile d'Azshara: " ..Azshara.. "/64\124r"
-        str6 = color_Green(str6)
-    else
-        str6 = "Voile d'Azshara: " ..Azshara.. "/64\124r"
-        str6 = color_Red(str6)
-    end
-    if (fTitan >= 8) then
-        str7 = "Flacon des Titans: " ..fTitan.. "/8\124r"
-        str7 = color_Green(str7)
-    else
-        str7 = "Flacon des Titans: " ..fTitan.. "/8\124r"
-        str7 = color_Red(str7)
-    end
-    if (cendrelle >= 64) then
-        str8 = "Cendrelle: " ..cendrelle.. "/64\124r"
-        str8 = color_Green(str8)
-    else
-        str8 = "Cendrelle: " ..cendrelle.. "/64\124r"
-        str8 = color_Red(str8)
-    end
-    if (vieVola >= 128) then
-        str9 = "Vie volatille: " ..vieVola.. "/128\124r"
-        str9 = color_Green(str9)
-    else
-        str9 = "Vie volatille: " ..vieVola.. "/128\124r"
-        str9 = color_Red(str9)
-    end
-    if (fouett >= 128) then
-        str10 = "Fouettine: " ..fouett.. "/128\124r"
-        str10 = color_Green(str10)
-    else
-        str10 = "Fouettine: " ..fouett.. "/128\124r"
-        str10 = color_Red(str10)
-    end
-    if (f2c >= 2) then
-        str11 = "Fiole de cristal: " ..f2c.. "/2\124r"
-        str11 = color_Green(str11)
-    else
-        str11 = "Fiole de cristal: " ..f2c.. "/2\124r"
-        str11 = color_Red(str11)
-    end
-    if (huile >= 8) then
-        str12 = "Huile de pierre: " ..huile.. "/8\124r"
-        str12 = color_Green(str12)
-    else
-        str12 = "Huile de pierre: " ..huile.. "/8\124r"
-        str12 = color_Red(str12)
-    end
-    
-    str = str1 .. " \n" .. str2 .. " \n" .. str3 .. " \n" .. str4 .. " \n" .. str5 .. " \n" .. str6 .. " \n" .. str7 .. " \n" .. str8  .. " \n" .. str9 .. "\n" .. str10 .. " \n" .. str11 .. " \n" .. str12
-    t:SetText(str)
-
-    
-end
-
-function color_Green(str)
-    str = "\124cFF00FF00" .. str
-    return str
-end
-function color_Red(str)
-    str = "\124cFFFF0000" .. str
-    return str
-end

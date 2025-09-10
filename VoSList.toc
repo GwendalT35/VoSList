@@ -1,11 +1,11 @@
-## Interface: 90001
+## Interface: 110200
 ## Title: VoS List
-## Notes: Track the list of components for the Vial of Sand
-## Notes-frFR: Liste des composants pour la fiole des sables
-## Version: 1.0
+## Title-frFR: VoS Liste
+## Notes: Track the list of components for the Vial of the Sands
+## Notes-frFR: Suivi des composants pour la Fiole des sables
+## Author: gdel35
+## Version: 1.1
 ## DefaultState: enabled
-## Author: zoroTheStoats
-## Links: https://github.com/ZoroTheStoats/VoSList
+## IconTexture: Interface\Icons\inv_alchemy_potion_03
 
 VoSList.lua
-
